@@ -1,0 +1,21 @@
+{
+    "serverPort": 3000,
+    "filters": {
+        "timeFrom": 1534723200000,
+        "timeTo": 1535327999999,
+        "minValue" : -5,
+        "maxValue" : 110,
+        "unloadedLimit": 1,
+        "idleLimit": 20
+    },
+    "machines": ["demo_ca1_t_axm"],
+    "metrics": ["Psum_kW"],
+    "dataFile": "demoCompressorWeekData.csv",
+    "dataHeaders": ["timestamp", "metricid", "deviceid", "recvalue", "calcvalue", "excthreshold" , "excthlimit", "deviation"],
+    "fileds": {
+        "machine": "deviceid",
+        "metric": "metricid",
+        "time": "timestamp",
+        "value": "recvalue"
+    }
+}
