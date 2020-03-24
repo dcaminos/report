@@ -8,7 +8,7 @@
         <div class="container">
           <div class="row mb-2">
             <div class="col-sm-12">
-              <h1 class="m-0 text-dark">Safian Alytics</h1>
+              <h1 class="m-0 text-dark">Safi Analytics</h1>
             </div><!-- /.col -->
           </div><!-- /.row -->
         </div><!-- /.container-fluid -->
