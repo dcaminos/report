@@ -12,7 +12,6 @@ describe('Error.vue', () => {
     })
 
     expect(wrapper.props().message).toBe(demoMessage)
-    expect(wrapper.html()).toContain('<h1>Critical error</h1>')
-    expect(wrapper.html()).toContain('<h2>' + demoMessage + '</h2>')
+    expect(wrapper.html()).toContain(demoMessage)
   })
 })

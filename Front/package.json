@@ -14,10 +14,12 @@
   },
   "dependencies": {
     "@vue/test-utils": "^1.0.0-beta.32",
+    "bootstrap": "^4.4.1",
+    "bootstrap-vue": "^2.8.0",
     "jquery": "^3.4.1",
     "moment": "^2.24.0",
     "plotly.js": "^1.52.3",
-    "vue": "^2.5.2"
+    "vue": "^2.6.11"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

@@ -8,8 +8,9 @@
         "unloadedLimit": 1,
         "idleLimit": 20
     },
-    "machines": ["demo_ca1_t_axm"],
-    "metrics": ["Psum_kW"],
+    "deltaTime": 30000,
+    "timeOffline": 120000,
+    "metric": "Psum_kW",
     "dataFile": "demoCompressorWeekData.csv",
     "dataHeaders": ["timestamp", "metricid", "deviceid", "recvalue", "calcvalue", "excthreshold" , "excthlimit", "deviation"],
     "fileds": {

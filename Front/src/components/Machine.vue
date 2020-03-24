@@ -1,117 +1,68 @@
 <template>
   <div class="machine">
-    <div class="header">
-      <h3 class="name">{{this.name}}</h3>
-      <div class="colColors">
-        <div><div class='box green'></div> Loaded</div>
-        <div><div class='box yellow'></div> Idle</div>
-        <div><div class='box red'></div> Unloaded</div>
-      </div>
-    </div>
-    <Chart v-bind:data="this.data" v-bind:layout="this.layout" v-bind:div-id="this.name + 'plot'" ></Chart>
+    <b-row>
+      <b-col cols="6">
+        <h5>States over the week</h5>
+      </b-col>
+      <b-col cols="6" class="colColors">
+        <div><div class='box' v-bind:style="{ background: colorOff}"></div> Off</div>
+        <div><div class='box' v-bind:style="{ background: colorUnloaded}"></div> Unloaded</div>
+        <div><div class='box' v-bind:style="{ background: colorIdle}"></div> Idle</div>
+        <div><div class='box' v-bind:style="{ background: colorLoaded}"></div> Loaded</div>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
+        <ChartStatesTimeLine v-bind:machine="this.machine" v-bind:index="index"></ChartStatesTimeLine>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="4">
+        <ChartStatesPie v-bind:machine="this.machine" v-bind:index="index"></ChartStatesPie>
+      </b-col>
+      <b-col cols="8">
+        <ChartStatesBar v-bind:machine="this.machine" v-bind:index="index"></ChartStatesBar>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
+        <ul>
+          <li>The machine was <b>On</b> {{this.onTime}}</li>
+          <li>The machine was <b>Off</b> {{this.offTime}}</li>
+          <li>The machine did go to <b>idle</b> mode {{this.idleTimes}} times</li>
+        </ul>
+        </b-col>
+                </b-row>
   </div>
 </template>
 
 <script>
-import Chart from './Chart'
 import moment from 'moment'
+import ChartStatesTimeLine from './charts/ChartStatesTimeLine'
+import ChartStatesBar from './charts/ChartStatesBar'
+import ChartStatesPie from './charts/ChartStatesPie'
+import { MachineStates, getStateColor, getDurationText } from '../utils'
 
 export default {
   name: 'machine',
-  components: { Chart },
+  components: { ChartStatesTimeLine, ChartStatesBar, ChartStatesPie },
   data () {
-    const timeFrom = moment.utc(this.config.filters.timeFrom).format('YYYY-MM-DD HH:mm:ss.SSS')
-    const timeTo = moment.utc(this.config.filters.timeTo).format('YYYY-MM-DD HH:mm:ss.SSS')
-
-    const data = this.metrics.map(metric => {
-      const x = []
-      const y = []
-      const text = []
-      const hovertemplate = 'Metric: ' + metric.name + '<br>Value: %{y}<br>Time: %{x}<br>Status: %{text}<extra></extra>'
-
-      metric.values.forEach(value => {
-        const time = moment.utc(value.time).format('YYYY-MM-DD HH:mm:ss.SSS')
-        x.push(time)
-        y.push(value.value)
-        if (value.value < this.config.filters.unloadedLimit) {
-          text.push('Unloaded')
-        } else if (value.value < this.config.filters.idleLimit) {
-          text.push('Idle')
-        } else {
-          text.push('Loaded')
-        }
-      })
-
-      return { x, y, text, hovertemplate, mode: 'markers', name: metric.name }
-    })
-
-    var layout = {
-      xaxis: {
-        range: [timeFrom, timeTo],
-        type: 'date'
-      },
-      height: 300,
-      margin: { l: 35, r: 35, b: 35, t: 25, pad: 0 },
-      shapes: [
-        {
-          layer: 'below',
-          type: 'rect',
-          xref: 'x',
-          yref: 'y',
-          x0: timeFrom,
-          x1: timeTo,
-          y0: this.config.filters.minValue,
-          y1: this.config.filters.unloadedLimit,
-          fillcolor: '#FF0000',
-          opacity: 0.2,
-          line: {
-            width: 0
-          }
-        },
-        {
-          layer: 'below',
-          type: 'rect',
-          xref: 'x',
-          yref: 'y',
-          x0: timeFrom,
-          x1: timeTo,
-          y0: this.config.filters.unloadedLimit,
-          y1: this.config.filters.idleLimit,
-          fillcolor: '#FFFF00',
-          opacity: 0.2,
-          line: {
-            width: 0
-          }
-        },
-        {
-          layer: 'below',
-          type: 'rect',
-          xref: 'x',
-          yref: 'y',
-          x0: timeFrom,
-          x1: timeTo,
-          y0: this.config.filters.idleLimit,
-          y1: this.config.filters.maxValue,
-          fillcolor: '#008000',
-          opacity: 0.2,
-          line: {
-            width: 0
-          }
-        }
-      ]
+    return {
+      colorOff: getStateColor(MachineStates.OFF),
+      colorUnloaded: getStateColor(MachineStates.UNLOADED),
+      colorIdle: getStateColor(MachineStates.IDLE),
+      colorLoaded: getStateColor(MachineStates.LOADED),
+      onTime: getDurationText(moment.duration(this.machine.stateTimes[MachineStates.UNLOADED] + this.machine.stateTimes[MachineStates.IDLE] + this.machine.stateTimes[MachineStates.LOADED])),
+      offTime: getDurationText(moment.duration(this.machine.stateTimes[MachineStates.OFF])),
+      idleTimes: this.machine.changes.filter(change => change.state === MachineStates.IDLE).length
     }
-
-    return { data, layout }
   },
   props: {
-    name: {
-      type: String
-    },
-    metrics: {
-      type: Array
-    },
-    config: {
+    machine: {
       type: Object
+    },
+    index: {
+      type: Number
     }
   }
 }
@@ -119,27 +70,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.machine {
-  margin-left: 20px;
-  margin-top: 10px;
-  margin-bottom: 40px;
-}
 
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end
-}
-
-.name {
-  margin: 0;
+.machine .row:not(:first-child) {
+  margin-top: 25px;
 }
 
 .colColors {
   display: flex;
   flex-direction: row;
   font-size: 0.75em;
+  font-weight: bolder;
+  justify-content: flex-end;
 }
 
 .box {
@@ -149,17 +90,5 @@ export default {
   margin-right: 5px;
   margin-left: 20px;
   clear: both;
-}
-
-.green {
-  background-color: #cce6cc;
-}
-
-.yellow {
-  background-color: #ffffcc;
-}
-
-.red {
-  background-color: #ffcccc;
 }
 </style>

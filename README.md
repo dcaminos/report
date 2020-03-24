@@ -15,8 +15,9 @@
 | filters.minValue | min value to render | -5 |
 | filters.unloadedLimit | max value to declare the machine status as unloaded | 1 |
 | filters.idleLimit | max value to declare the machine status as idle | 20 |
-| machines | List of machines to render| ["demo_ca1_t_axm"] |
-| metrics | List of metrics to render| ["Psum_kW"] |
+| timeOffline | Limit of time to consider the machine like offline | 120000 (2 min) |
+| deltaTime | Seconds after last input to set the start of Offline state | 30000 (30 sec) |
+| metric | The metric name to render| "Psum_kW |
 | dataFile | Name of the CSV file | demoCompressorWeekData.csv |
 | dataHeaders | Name of the columns inside CSV file | ["timestamp", "metricid", "deviceid", "recvalue", "calcvalue", "excthreshold" , "excthlimit", "deviation"] |
 | fileds.machine | name of the machine column inside the CSV file  | deviceid |
